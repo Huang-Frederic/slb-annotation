@@ -67,28 +67,21 @@ document
     if (imageFiles.length > 0) {
       document.getElementById("selectFolderButton").style.display = "none";
       document.getElementById("privacy").style.display = "none";
-      document.getElementById("prevButton").classList.remove("hidden");
-      document.getElementById("nextButton").classList.remove("hidden");
-      document.getElementById("resetViewButton").classList.remove("hidden");
-      document.getElementById("clearButton").classList.remove("hidden");
-      document.getElementById("undoButton").classList.remove("hidden");
-      document.getElementById("downloadButton").classList.remove("hidden");
-      document.getElementById("toggleModeButton").classList.remove("hidden");
+
+      // Remove 'hidden' class from all elements with the class 'btn' or 'dropdown-container'
+      document
+        .querySelectorAll(".btn, .dropdown-container")
+        .forEach((element) => {
+          element.classList.remove("hidden");
+        });
+
+      // Remove 'hiden' for the other containers
       document.getElementById("canvasContainer").classList.remove("hidden");
       document
-        .getElementById("annotationDescription")
+        .getElementById("annotationInputContainer")
         .classList.remove("hidden");
-      document
-        .getElementById("loadAnnotationsButton")
-        .classList.remove("hidden");
-      document.getElementById("helpButton").classList.remove("hidden");
       document.getElementById("sliderContainer").classList.remove("hidden");
-      document.getElementById("readabilityDropdown").classList.remove("hidden");
-      document
-        .getElementById("imageQualityDropdown")
-        .classList.remove("hidden");
-      document.getElementById("labelImgQuality").classList.remove("hidden");
-      document.getElementById("labelImgReadability").classList.remove("hidden");
+
       loadSample();
     } else {
       alert("No images found in the folder.");

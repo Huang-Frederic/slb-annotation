@@ -11,12 +11,17 @@ body {
 }
 
 .button-container {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   /* Spacing between button row and canvas */
 }
 
+.dropdown-container {
+  margin-top: 20px;
+  /* Spacing between canvas and dropdown */
+}
+
 button {
-  background-color: #333;
+  background-color: #0014dc;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -26,14 +31,14 @@ button {
 }
 
 button:hover {
-  background-color: #555;
+  background-color: #0012dcb4;
 }
 
 #canvasContainer {
   width: 90%;
   max-width: 1024px;
   height: 80vh;
-  border: 3px solid #333;
+  border: 3px solid #0014dc;
   border-radius: 10px;
   overflow: hidden;
   position: relative;
@@ -58,7 +63,7 @@ input[type="text"] {
   height: 5vh;
   /* Adjust based on preference */
   border-radius: 5px;
-  border: 1px solid #333;
+  border: 1px solid #0014dc;
 }
 
 .hidden {

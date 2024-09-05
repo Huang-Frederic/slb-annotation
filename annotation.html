@@ -1,132 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
+    <title>Annotation Made by AILab</title>
   </head>
 
   <body>
-    <!-- Help Modal -->
-    <div id="helpModal" class="modal hidden">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>How to Use This App</h2>
-        <p><strong>Visualization</strong></p>
-        <ul>
-          <li><strong>Pan:</strong> Drag with left click.</li>
-          <li><strong>Zoom:</strong> Scroll mouse wheel.</li>
-          <li><strong>Reset View:</strong> Click the "Reset View" button.</li>
-          <li>
-            <strong>Go to next image:</strong> Click on `Next`or press `D` or
-            `LeftArrow`
-          </li>
-          <li>
-            <strong>Go to previous image:</strong> Click on `Previous` or press
-            `A` or `RightArrow`
-          </li>
-          <li>
-            <strong>Overlay mask:</strong> Save along your `imgname.jpg` the
-            mask `imgname_mask.png`.
-          </li>
-        </ul>
-        <p><strong>Annotation</strong></p>
-        <ul>
-          <li>
-            <strong>Switch Mode:</strong> Toggle between point annotation and
-            bounding box annotation modes.
-          </li>
-          <li>
-            <strong>Box Annotation:</strong> Use two left clicks per bounding
-            box.
-          </li>
-          <li>
-            <strong>Point Annotation:</strong> Use both left (positive) and
-            right (negative) clicks.
-          </li>
-          <li>
-            <strong>Text Annotation:</strong> Insert or edit the contents of the
-            textbox.
-          </li>
-          <li>
-            <strong>Delete Annotation:</strong> Click on `Undo` to remove the
-            last annotation or on `Clear` to remove all annotations over the
-            current image.
-          </li>
-          <li>
-            <strong>Save/Load:</strong> You can save your annotations to a file
-            or load previous annotations using `Save` and `Load`.
-          </li>
-        </ul>
-        <p>
-          <strong>Feedback:</strong>
-          <a href="https://github.com/franchesoni/minimalist-annotation"
-            >repository</a
-          >,
-          <a href="mailto:marchesoniacland@gmail.com">email</a>
-        </p>
-      </div>
-    </div>
+    <!-- Buttons and Controls -->
     <div class="button-container">
       <button id="selectFolderButton" style="font-size: x-large">
         Select Folder
       </button>
-      <button id="prevButton" class="hidden">Previous</button>
-      <button id="nextButton" class="hidden">Next</button>
-      <button id="resetViewButton" class="hidden">Reset View</button>
-      <button id="clearButton" class="hidden">Clear</button>
-      <button id="undoButton" class="hidden">Undo</button>
-      <button id="toggleModeButton" class="hidden">
+      <button id="prevButton" class="btn hidden">Previous</button>
+      <button id="nextButton" class="btn hidden">Next</button>
+      <button id="resetViewButton" class="btn hidden">Reset View</button>
+      <button id="clearButton" class="btn hidden">Clear</button>
+      <button id="undoButton" class="btn hidden">Undo</button>
+      <button id="toggleModeButton" class="btn hidden">
         Switch to Bounding Box Mode
       </button>
-      <button id="downloadButton" class="hidden">Save Annotations</button>
-      <button id="loadAnnotationsButton" class="hidden">
+      <button id="downloadButton" class="btn hidden">Save Annotations</button>
+      <button id="loadAnnotationsButton" class="btn hidden">
         Load Annotations
       </button>
-      <button id="helpButton" class="hidden">?</button>
-      <label for="imageQualityDropdown" class="hidden" id="labelImgQuality"
-        >Image quality:</label
-      >
-      <select id="imageQualityDropdown" class="hidden">
-        <option disabled selected value>-- select an option --</option>
-        <option value="bad">bad</option>
-        <option value="medium">medium</option>
-        <option value="good">good</option>
-      </select>
-      <label for="readabilityDropdown" class="hidden" id="labelImgReadability"
-        >Text readability:</label
-      >
-      <select id="readabilityDropdown" class="hidden">
-        <option disabled selected value>-- select an option --</option>
-        <option value="Readable">Readable</option>
-        <option value="incomplete">Partially hidden</option>
-        <option value="un-readable">un-readable</option>
-      </select>
+      <button id="helpButton" class="btn hidden">?</button>
     </div>
-    <p id="privacy" style="width: 50%; text-align: justify">
-      <strong>Privacy note:</strong> The app is running on your browser and no
-      data is ever sent. Trust me. I don't care. You can always disable your
-      internet connection or check the
+
+    <div class="button-container">
+      <!-- Image Quality Dropdown -->
+      <div id="imageQualityDropdownContainer" class="dropdown-container hidden">
+        <label for="imageQualityDropdown">Image quality:</label>
+        <select id="imageQualityDropdown">
+          <option disabled selected value>-- select an option --</option>
+          <option value="bad">Bad</option>
+          <option value="medium">Medium</option>
+          <option value="good">Good</option>
+        </select>
+      </div>
+
+      <!-- Readability Dropdown -->
+      <div id="readabilityDropdownContainer" class="dropdown-container hidden">
+        <label for="readabilityDropdown">Text readability:</label>
+        <select id="readabilityDropdown">
+          <option disabled selected value>-- select an option --</option>
+          <option value="Readable">Readable</option>
+          <option value="incomplete">Partially hidden</option>
+          <option value="un-readable">Un-readable</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Privacy Note -->
+    <p id="privacy" class="privacy-note" style="text-align: center">
+      <strong>Privacy note:</strong> The app runs in your browser and no data is
+      ever sent. <br />
+      You can always disable your internet connection or check the
       <a
         href="https://github.com/franchesoni/minimalist-annotation/blob/main/index.html"
         >source code</a
       >
       if in doubt.
     </p>
-    <div id="canvasContainer" class="hidden">
+
+    <!-- Canvas Containers -->
+    <div id="canvasContainer" class="canvas-container hidden">
       <canvas id="imageCanvas"></canvas>
       <canvas id="maskCanvas"></canvas>
       <canvas id="annCanvas"></canvas>
       <canvas id="tmpCanvas"></canvas>
       <canvas id="crosshairCanvas"></canvas>
     </div>
-    <div class="input-container">
-      <input type="text" id="annotationDescription" class="hidden" />
+
+    <!-- Annotation Description Input -->
+    <div class="input-container hidden" id="annotationInputContainer">
+      <input
+        type="text"
+        id="annotationDescription"
+        placeholder="Annotation Description"
+      />
     </div>
-    <!-- Add the mask transparency slider -->
+
+    <!-- Mask Transparency Slider -->
     <div class="slider-container hidden" id="sliderContainer">
-      <label class="slider-label" for="alphaSlider">Mask Opacity:</label>
+      <label for="alphaSlider">Mask Opacity:</label>
       <input type="range" id="alphaSlider" min="0" max="100" value="30" />
     </div>
 
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>How to Use This App</h2>
+        <section>
+          <h3>Visualization</h3>
+          <ul>
+            <li><strong>Pan:</strong> Drag with left click.</li>
+            <li><strong>Zoom:</strong> Scroll mouse wheel.</li>
+            <li><strong>Reset View:</strong> Click the "Reset View" button.</li>
+            <li>
+              <strong>Next Image:</strong> Click `Next` or press `D` or
+              `RightArrow`.
+            </li>
+            <li>
+              <strong>Previous Image:</strong> Click `Previous` or press `A` or
+              `LeftArrow`.
+            </li>
+            <li>
+              <strong>Overlay Mask:</strong> Save your image as `imgname.jpg`
+              with the mask as `imgname_mask.png`.
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h3>Annotation</h3>
+          <ul>
+            <li>
+              <strong>Switch Mode:</strong> Toggle between point annotation and
+              bounding box annotation modes.
+            </li>
+            <li>
+              <strong>Box Annotation:</strong> Use two left clicks per bounding
+              box.
+            </li>
+            <li>
+              <strong>Point Annotation:</strong> Use left (positive) and right
+              (negative) clicks.
+            </li>
+            <li>
+              <strong>Text Annotation:</strong> Insert or edit the text in the
+              textbox.
+            </li>
+            <li>
+              <strong>Delete Annotation:</strong> Click `Undo` to remove the
+              last annotation or `Clear` to remove all annotations on the
+              current image.
+            </li>
+            <li>
+              <strong>Save/Load:</strong> Save your annotations to a file or
+              load previous annotations using `Save` and `Load`.
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h3>Feedback</h3>
+          <p>
+            For feedback, visit the
+            <a href="https://github.com/franchesoni/minimalist-annotation"
+              >repository</a
+            >
+            or email
+            <a href="mailto:marchesoniacland@gmail.com"
+              >marchesoniacland@gmail.com</a
+            >.
+          </p>
+        </section>
+      </div>
+    </div>
+
+    <!-- Hidden Inputs -->
     <input
       type="file"
       id="folderInput"
@@ -137,6 +170,6 @@
     />
     <input type="file" id="loadFileInput" class="hidden" accept=".json" />
 
-    <script type="text/javascript" src="logic.js"></script>
+    <script src="logic.js"></script>
   </body>
 </html>
