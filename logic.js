@@ -81,6 +81,7 @@ document
         .getElementById("annotationInputContainer")
         .classList.remove("hidden");
       document.getElementById("sliderContainer").classList.remove("hidden");
+      document.getElementById("switch-container").style.display = "flex";
 
       loadSample();
     } else {

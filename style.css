@@ -73,6 +73,7 @@ button:hover {
   border-radius: 10px;
   overflow: hidden;
   position: relative;
+  cursor:crosshair;
 }
 
 canvas {
@@ -147,11 +148,9 @@ input[type="text"] {
   cursor: pointer;
 }
 
-
-
 /* Container for the switch and label */
 .switch-container {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   gap: 8px;
@@ -165,8 +164,8 @@ input[type="text"] {
 .switch {
   position: relative;
   display: inline-block;
-  width: 50px;
-  height: 26px;
+  width: 40px;
+  height: 20px;
 }
 
 /* Hide the default checkbox */
@@ -192,27 +191,24 @@ input[type="text"] {
 .slider:before {
   position: absolute;
   content: "";
-  height: 20px;
-  width: 20px;
+  height: 16px;
+  width: 16px;
   left: 2px;
-  bottom: 3px;
+  bottom: 2px;
   background-color: #0014dc;
   transition: 0.4s;
   border-radius: 50%;
 }
 
-/* When the switch is checked */
-/* input:checked + .slider {
-  background-color: #007BFF;
-} */
-
 input:checked + .slider:before {
-  transform: translateX(26px);
+  transform: translateX(20px);
 }
 
 /* Add transition to the label */
 #switchLabel {
   color: #fff;
   margin-top: 2px;
-  font-size: 14px;
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+
 }
