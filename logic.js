@@ -147,17 +147,19 @@ document
     this.value = ""; // Reset the input after the file is loaded
   });
 
-document
-  .getElementById("toggleModeButton")
-  .addEventListener("click", function () {
-    if (annotationMode === "point") {
-      annotationMode = "bbox";
-      this.textContent = "Switch to Point Mode";
-    } else {
-      annotationMode = "point";
-      this.textContent = "Switch to Bounding Box Mode";
-    }
-  });
+document.getElementById("toggleModeButton").addEventListener("change", function () {
+  console.log("Switching annotation mode");
+  const label = document.getElementById("switchLabel"); 
+  if (this.checked) { 
+    annotationMode = "bbox"; 
+    label.textContent = "Box Mode"; 
+  } else {
+    annotationMode = "point";
+    label.textContent = "Point Mode";
+  }
+});
+  
+
 
 document.getElementById("nextButton").addEventListener("click", function () {
   if (currentIndex < imageFiles.length - 1) {

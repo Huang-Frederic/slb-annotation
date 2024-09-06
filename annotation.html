@@ -18,9 +18,17 @@
       <button id="resetViewButton" class="btn hidden">Reset View</button>
       <button id="clearButton" class="btn hidden">Clear</button>
       <button id="undoButton" class="btn hidden">Undo</button>
-      <button id="toggleModeButton" class="btn hidden">
-        Switch to Bounding Box Mode
-      </button>
+
+      <div class="switch-container btn hidden">
+        <label class="switch">
+          <input type="checkbox" id="toggleModeButton" />
+          <span class="slider"></span>
+        </label>
+        <span id="switchLabel">Point Mode</span>
+      </div>
+      
+
+
       <button id="loadAnnotationsButton" class="btn hidden">
         Load Annotations
       </button>
@@ -77,19 +85,19 @@
     </div>
 
     <!-- Annotation Description Input -->
-    <!-- <div class="input-container hidden" id="annotationInputContainer">
+    <div class="input-container hidden" id="annotationInputContainer">
       <input
         type="text"
         id="annotationDescription"
         placeholder="Annotation Description"
       />
-    </div> -->
+    </div>
 
-    <!-- Mask Opacity Slider : The Logic is still present in the back but since it's not used, I just commented it until we use it -->
-    <!-- <div class="slider-container hidden" id="sliderContainer">
+    <!-- Mask Opacity Slider : The Logic is still present in the back but since it's not used ...-->
+    <div class="slider-container hidden" id="sliderContainer">
       <label for="alphaSlider">Mask Opacity:</label>
       <input type="range" id="alphaSlider" min="0" max="100" value="30" />
-    </div> -->
+    </div>
 
     <!-- Help Modal -->
     <div id="helpModal" class="modal hidden">
