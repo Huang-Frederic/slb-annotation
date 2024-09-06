@@ -11,14 +11,41 @@ body {
 }
 
 .button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px; 
   margin-bottom: 10px;
-  /* Spacing between button row and canvas */
+  margin-top: 10px;
 }
 
-.dropdown-container {
-  margin-top: 20px;
-  /* Spacing between canvas and dropdown */
+.dropdown-container label {
+  display: block;
+  margin-bottom:4px;
+  font-size: 14px;
 }
+
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: transparent;
+  color: #e0e0e0;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: #007BFF;
+}
+
+select option {
+  padding: 10px;
+  color: #121212;
+}
+
 
 button {
   background-color: #0014dc;
@@ -28,6 +55,10 @@ button {
   margin: 5px;
   border-radius: 5px;
   cursor: pointer;
+}
+
+#downloadButton {
+  margin-top: 25px;
 }
 
 button:hover {

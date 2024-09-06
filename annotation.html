@@ -21,35 +21,10 @@
       <button id="toggleModeButton" class="btn hidden">
         Switch to Bounding Box Mode
       </button>
-      <button id="downloadButton" class="btn hidden">Save Annotations</button>
       <button id="loadAnnotationsButton" class="btn hidden">
         Load Annotations
       </button>
       <button id="helpButton" class="btn hidden">?</button>
-    </div>
-
-    <div class="button-container">
-      <!-- Image Quality Dropdown -->
-      <div id="imageQualityDropdownContainer" class="dropdown-container hidden">
-        <label for="imageQualityDropdown">Image quality:</label>
-        <select id="imageQualityDropdown">
-          <option disabled selected value>-- select an option --</option>
-          <option value="bad">Bad</option>
-          <option value="medium">Medium</option>
-          <option value="good">Good</option>
-        </select>
-      </div>
-
-      <!-- Readability Dropdown -->
-      <div id="readabilityDropdownContainer" class="dropdown-container hidden">
-        <label for="readabilityDropdown">Text readability:</label>
-        <select id="readabilityDropdown">
-          <option disabled selected value>-- select an option --</option>
-          <option value="Readable">Readable</option>
-          <option value="incomplete">Partially hidden</option>
-          <option value="un-readable">Un-readable</option>
-        </select>
-      </div>
     </div>
 
     <!-- Privacy Note -->
@@ -73,14 +48,42 @@
       <canvas id="crosshairCanvas"></canvas>
     </div>
 
+    <!-- Dropdowns -->
+    <div class="button-container">
+      <!-- Image Quality Dropdown -->
+      <div id="imageQualityDropdownContainer" class="dropdown-container hidden">
+        <label for="imageQualityDropdown">Image quality:</label>
+        <select id="imageQualityDropdown">
+          <option disabled selected value>-- select an option --</option>
+          <option value="bad">Bad</option>
+          <option value="medium">Medium</option>
+          <option value="good">Good</option>
+        </select>
+      </div>
+
+      <!-- Readability Dropdown -->
+      <div id="readabilityDropdownContainer" class="dropdown-container hidden">
+        <label for="readabilityDropdown">Text readability:</label>
+        <select id="readabilityDropdown">
+          <option disabled selected value>-- select an option --</option>
+          <option value="Readable">Readable</option>
+          <option value="incomplete">Partially hidden</option>
+          <option value="un-readable">Un-readable</option>
+        </select>
+      </div>
+
+      <!-- Export Button -->
+      <button id="downloadButton" class="btn hidden">Save Annotations</button>
+    </div>
+
     <!-- Annotation Description Input -->
-    <div class="input-container hidden" id="annotationInputContainer">
+    <!-- <div class="input-container hidden" id="annotationInputContainer">
       <input
         type="text"
         id="annotationDescription"
         placeholder="Annotation Description"
       />
-    </div>
+    </div> -->
 
     <!-- Mask Opacity Slider : The Logic is still present in the back but since it's not used, I just commented it until we use it -->
     <!-- <div class="slider-container hidden" id="sliderContainer">
