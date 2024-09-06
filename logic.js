@@ -1,4 +1,5 @@
 let imageFiles = [];
+let folderPath = "";
 let currentIndex = 0;
 let annotations = {};
 let imageCanvas = document.getElementById("imageCanvas");
@@ -51,43 +52,84 @@ document.addEventListener("keydown", function (event) {
   }
 });
 
-document
-  .getElementById("folderInput")
-  .addEventListener("change", function (event) {
-    const files = event.target.files;
-    imageFiles = [];
-    annotations = {};
+// Show the modal when the Save Annotations button is clicked
+document.getElementById("downloadButton").addEventListener("click", function () {
+  document.getElementById("downloadModal").classList.remove("hidden");
+  document.getElementById("downloadModal").style.display = "flex";
+});
 
-    for (const file of files) {
-      if (file.type.startsWith("image/")) {
-        imageFiles.push(file);
-      }
+// Function to download annotations
+function downloadAnnotations(downloadToUploadedFolder) {
+  let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(annotations));
+  let downloadAnchorNode = document.createElement("a");
+
+  if (downloadToUploadedFolder && uploadedFolderPath) {
+    console.log(folderPath)
+    downloadAnchorNode.setAttribute("download", `${uploadedFolderPath}/annotations.json`);
+  } else {
+    downloadAnchorNode.setAttribute("download", "annotations.json");
+  }
+
+  downloadAnchorNode.setAttribute("href", dataStr);
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}
+
+// Event listeners for the modal buttons
+document.getElementById("downloadCurrentButton").addEventListener("click", function () {
+  downloadAnnotations(false); // Download to current folder
+  closeModal();
+});
+
+document.getElementById("downloadUploadedButton").addEventListener("click", function () {
+  downloadAnnotations(true); // Download to uploaded folder
+  closeModal();
+});
+
+document.getElementById("cancelButton").addEventListener("click", closeModal);
+
+function closeModal() {
+  document.getElementById("downloadModal").classList.add("hidden");
+  document.getElementById("downloadModal").style.display = "none";
+}
+
+// Folder Input Change Event - Store uploaded folder path
+document.getElementById("folderInput").addEventListener("change", function (event) {
+  const files = event.target.files;
+  folderPath = files[0].mozFullPath; 
+  imageFiles = [];
+  annotations = {};
+
+  for (const file of files) {
+    if (file.type.startsWith("image/")) {
+      imageFiles.push(file);
     }
+  }
 
-    if (imageFiles.length > 0) {
-      document.getElementById("selectFolderButton").style.display = "none";
-      document.getElementById("privacy").style.display = "none";
+  if (imageFiles.length > 0) {
+    // Store uploaded folder path based on file location
+    uploadedFolderPath = files[0].webkitRelativePath.split("/")[0]; // Get the root folder
 
-      // Remove 'hidden' class from all elements with the class 'btn' or 'dropdown-container'
-      document
-        .querySelectorAll(".btn, .dropdown-container")
-        .forEach((element) => {
-          element.classList.remove("hidden");
-        });
+    document.getElementById("selectFolderButton").style.display = "none";
+    document.getElementById("privacy").style.display = "none";
 
-      // Remove 'hiden' for the other containers
-      document.getElementById("canvasContainer").classList.remove("hidden");
-      document
-        .getElementById("annotationInputContainer")
-        .classList.remove("hidden");
-      document.getElementById("sliderContainer").classList.remove("hidden");
-      document.getElementById("switch-container").style.display = "flex";
+    document.querySelectorAll(".btn, .dropdown-container").forEach((element) => {
+      element.classList.remove("hidden");
+    });
 
-      loadSample();
-    } else {
-      alert("No images found in the folder.");
-    }
-  });
+    document.getElementById("canvasContainer").classList.remove("hidden");
+    document.getElementById("annotationInputContainer").classList.remove("hidden");
+    document.getElementById("sliderContainer").classList.remove("hidden");
+    document.getElementById("switch-container").style.display = "flex";
+
+    loadSample();
+  } else {
+    alert("No images found in the folder.");
+  }
+});
+
+
 
 // Get the modal
 var modal = document.getElementById("helpModal");
@@ -194,12 +236,6 @@ document.getElementById("undoButton").addEventListener("click", function () {
 });
 
 document
-  .getElementById("downloadButton")
-  .addEventListener("click", function () {
-    downloadAnnotations();
-  });
-
-document
   .getElementById("annotationDescription")
   .addEventListener("focus", function () {
     // remove previous description
@@ -261,19 +297,6 @@ document
     }
     renderAll(); // update the canvas with new annotation
   });
-
-function downloadAnnotations() {
-  // Convert the annotations object to a JSON string
-  let dataStr =
-    "data:text/json;charset=utf-8," +
-    encodeURIComponent(JSON.stringify(annotations));
-  let downloadAnchorNode = document.createElement("a");
-  downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute("download", "annotations.json");
-  document.body.appendChild(downloadAnchorNode); // Required for Firefox
-  downloadAnchorNode.click();
-  downloadAnchorNode.remove();
-}
 
 // Function to update mask transparency
 function updateMaskOpacity(value) {

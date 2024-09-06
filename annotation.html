@@ -27,8 +27,6 @@
         <span id="switchLabel">Point Mode</span>
       </div>
       
-
-
       <button id="loadAnnotationsButton" class="btn hidden">
         Load Annotations
       </button>
@@ -101,7 +99,7 @@
 
     <!-- Help Modal -->
     <div id="helpModal" class="modal hidden">
-      <div class="modal-content">
+      <div class="modal-content"  style="width:58%">
         <span class="close">&times;</span>
         <h2>How to Use This App</h2>
         <section>
@@ -169,6 +167,20 @@
         </section>
       </div>
     </div>
+
+    <!-- Export Modal -->
+    <div id="downloadModal" class="modal hidden">
+      <div class="modal-content"  style="height:20%; margin-top: 20%;">
+        <span id="cancelButton" class="close">&times;</span>
+        <h2>Select Download Folder</h2>
+        <span>Choose the destination folder for the export JSON between your download folder and the folder you uploaded <br><br></span>
+        <div style="display:flex;justify-content:space-around">
+          <button id="downloadCurrentButton" class="modal-btn">Download to Download Folder</button>
+          <button id="downloadUploadedButton" class="modal-btn">Download to Uploaded Folder</button>
+        </div>
+      </div>
+    </div>
+
 
     <!-- Hidden Inputs -->
     <input
