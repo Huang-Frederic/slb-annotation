@@ -189,9 +189,25 @@ document.getElementById("clearButton").addEventListener("click", function () {
 });
 
 document.getElementById("undoButton").addEventListener("click", function () {
-  annotations[currentFile].pop();
-  renderAll();
+  undoLastAnnotation();
 });
+
+document.addEventListener("keydown", function (event) {
+  if (event.ctrlKey && event.key === "z") {
+    undoLastAnnotation();
+  } else if (event.ctrlKey && event.key === "w") {
+    undoLastAnnotation();
+  }
+});
+
+function undoLastAnnotation() {
+  if (annotations[currentFile] && annotations[currentFile].length > 0) {
+    annotations[currentFile].pop();
+    renderAll();
+  } else {
+    console.log("No annotations to undo.");
+  }
+}
 
 document
   .getElementById("downloadButton")

@@ -152,11 +152,11 @@ input[type="text"] {
 .switch-container {
   display: none;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  justify-content: space-between;
+  padding: 0px 10px 0px 10px;
   background-color: #0014dc;
   border-radius: 5px;
-  width: 150px;
+  width: 120px;
   height: 35px;
 }
 
