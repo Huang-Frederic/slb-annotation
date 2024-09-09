@@ -222,20 +222,12 @@ document
   .getElementById("readabilityDropdown")
   .addEventListener("change", function () {
     const selectedValue = this.value;
-    const flag_never_annotated = true;
     annotations[currentFile].forEach((ann_) => {
       if (ann_.type == "readability") {
         ann_.value = selectedValue;
         flag_never_annotated = false;
       }
     });
-    if (flag_never_annotated) {
-      // update the annotations with the selected value
-      annotations[currentFile].push({
-        type: "readability",
-        value: selectedValue,
-      });
-    }
     renderAll(); // update the canvas with new annotation
   });
 
@@ -243,20 +235,11 @@ document
   .getElementById("imageQualityDropdown")
   .addEventListener("change", function () {
     const selectedValue = this.value;
-    const flag_never_annotated = true;
     annotations[currentFile].forEach((ann_) => {
       if (ann_.type == "imageQuality") {
         ann_.value = selectedValue;
-        flag_never_annotated = false;
       }
     });
-    if (flag_never_annotated) {
-      // update the annotations with the selected value
-      annotations[currentFile].push({
-        type: "imageQuality",
-        value: selectedValue,
-      });
-    }
     renderAll(); // update the canvas with new annotation
   });
 
@@ -523,6 +506,7 @@ function renderAll() {
 
   // Loop through each annotation
   annotations[currentFile].forEach((ann, index) => {
+    if (ann.type == "bbox" || ann.type == "positive" || ann.type == "negative") {
     // Create the div with class 'inputdiv'
     let inputDiv = document.createElement("div");
     inputDiv.classList.add("inputdiv");
@@ -535,7 +519,7 @@ function renderAll() {
     let input = document.createElement("input");
     input.type = "text";
     input.value = ann.description || "";
-    input.placeholder = `Description for annotation ${index + 1}`;
+    input.placeholder = `Description for annotation ${index - 1}`;
 
     if (ann.type === "bbox") {
       input.style.border = `2px solid ${ann.color}`; 
@@ -562,6 +546,8 @@ function renderAll() {
   
     // Append the div to the annotation input container
     annotationInputContainer.appendChild(inputDiv);
+
+    }
 
     if (ann.type === "bbox") {
       annCtx.strokeStyle = ann.color;
@@ -654,7 +640,9 @@ function resetViewParams() {
 function loadSample() {
   if (currentIndex >= 0 && currentIndex < imageFiles.length) {
     currentFile = imageFiles[currentIndex].name;
-    annotations[currentFile] = annotations[currentFile] || [];
+    annotations[currentFile] = annotations[currentFile] || [
+      {"type":"imageQuality","value":""},{"type":"readability","value":""}
+    ];
     const fileReader = new FileReader();
     fileReader.onload = function (e) {
       currentImage = new Image();
