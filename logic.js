@@ -198,6 +198,9 @@ document.addEventListener("keydown", function (event) {
   } else if (event.ctrlKey && event.key === "w") {
     undoLastAnnotation();
   }
+  else if (event.ctrlKey && event.key === "/") {
+    console.log(annotations[currentFile]);
+  }
 });
 
 function undoLastAnnotation() {
@@ -420,6 +423,42 @@ crosshairCanvas.addEventListener("wheel", function (event) {
   document.getElementById("annotationDescription").blur();
   renderAll();
 });
+////////////////////
+////////////////////
+////////////////////
+
+const distinctCssColors = [
+  "purple",
+  "blueviolet",
+  "aqua",
+  "brown",
+  "coral",
+  "cornflowerblue",
+  "cyan",
+  "darkorange",
+  "deeppink",
+  "firebrick",
+  "deeppink",
+  "gold",
+  "greenyellow",
+  "indigo",
+  "khaki",
+  "lightcoral",
+  "lightsalmon",
+  "lightseagreen",
+  "magenta",
+  "lavender",
+  "plum",
+  "orangered",
+  "royalblue",
+  "thistle",
+  "yellow",
+  "palevioletred",
+  "sienna",
+  "slateblue",
+  "teal",
+  "whitesmoke"
+];
 
 function addPoint(x, y, type) {
   console.log("Adding point at", x, y, type);
@@ -432,12 +471,38 @@ function addPoint(x, y, type) {
   renderAll(); // Update the canvas with new point
 }
 
+function checkColorExists(colorIndex) {
+    const neo = Math.floor(annotations[currentFile].length/30);
+    console.log(neo);
+    console.log('QQWQ');
+    if (annotations[currentFile].length > 0) {
+      for (let i = neo*30; i < annotations[currentFile].length; i++) {
+        if (annotations[currentFile][i].type === "bbox") {
+          if (
+            annotations[currentFile][i].color === distinctCssColors[colorIndex]
+          ) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+}
+
 function addBoundingBox(start, end) {
+  let random = Math.floor(Math.random() * distinctCssColors.length);
+  do {
+    random = Math.floor(Math.random() * distinctCssColors.length);
+  } while (checkColorExists(random));
+
+  chosenColor = distinctCssColors[random];
+
   let bbox = {
     x1: Math.min(start.x, end.x),
     y1: Math.min(start.y, end.y),
     x2: Math.max(start.x, end.x),
     y2: Math.max(start.y, end.y),
+    color: chosenColor,
     type: "bbox",
   };
   annotations[currentFile].push(bbox);
@@ -463,7 +528,7 @@ function renderAll() {
   let deleteDescription = true;
   annotations[currentFile].forEach((ann) => {
     if (ann.type === "bbox") {
-      annCtx.strokeStyle = "green";
+      annCtx.strokeStyle = ann.color;
       annCtx.lineWidth = 4;
       let x1 = ann.x1 * scale + translateX;
       let y1 = ann.y1 * scale + translateY;
@@ -492,7 +557,9 @@ function renderAll() {
     document.getElementById("annotationDescription").value = "";
   }
 }
-
+////////////////////
+////////////////////
+////////////////////
 function applyClamping() {
   translateX = Math.max(
     Math.min(imageCanvas.width - margin, translateX),
