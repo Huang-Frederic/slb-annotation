@@ -47,14 +47,28 @@
       if in doubt.
     </p>
 
-    <!-- Canvas Containers -->
-    <div id="canvasContainer" class="canvas-container hidden">
-      <canvas id="imageCanvas"></canvas>
-      <canvas id="maskCanvas"></canvas>
-      <canvas id="annCanvas"></canvas>
-      <canvas id="tmpCanvas"></canvas>
-      <canvas id="crosshairCanvas"></canvas>
+    <!-- Canvas Containers & Annotation Description -->
+    <div id="ccad">
+      <!-- Canvas Containers -->
+      <div id="canvasContainer" class="canvas-container hidden">
+        <canvas id="imageCanvas"></canvas>
+        <canvas id="maskCanvas"></canvas>
+        <canvas id="annCanvas"></canvas>
+        <canvas id="tmpCanvas"></canvas>
+        <canvas id="crosshairCanvas"></canvas>
+      </div>
+
+      <!-- Annotation Description Input -->
+      <div class="input-container hidden" id="annotationInputContainer">
+        <input
+          type="text"
+          id="annotationDescription"
+          placeholder="Annotation Description"
+        />
+      </div>
     </div>
+
+
 
     <!-- Dropdowns -->
     <div class="button-container">
@@ -84,14 +98,6 @@
       <button id="downloadButton" class="btn hidden">Save Annotations</button>
     </div>
 
-    <!-- Annotation Description Input -->
-    <div class="input-container hidden" id="annotationInputContainer">
-      <input
-        type="text"
-        id="annotationDescription"
-        placeholder="Annotation Description"
-      />
-    </div>
 
     <!-- Mask Opacity Slider : The Logic is still present in the back but since it's not used ...-->
     <div class="slider-container hidden" id="sliderContainer">

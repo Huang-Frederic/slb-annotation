@@ -38,13 +38,13 @@ document
 document.addEventListener("keydown", function (event) {
   if (
     navigationActive &&
-    (event.key === "a" || event.key === "A" || event.key === "ArrowLeft")
+    (event.key === "ArrowLeft")
   ) {
     // Simulate a click on the "Previous" button
     document.getElementById("prevButton").click();
   } else if (
     navigationActive &&
-    (event.key === "d" || event.key === "D" || event.key === "ArrowRight")
+    (event.key === "ArrowRight")
   ) {
     // Simulate a click on the "Next" button
     document.getElementById("nextButton").click();
@@ -219,27 +219,6 @@ document
   });
 
 document
-  .getElementById("annotationDescription")
-  .addEventListener("focus", function () {
-    // remove previous description
-    navigationActive = false;
-    annotations[currentFile] = annotations[currentFile].filter(
-      (ann) => ann.type !== "desc"
-    );
-  });
-
-document
-  .getElementById("annotationDescription")
-  .addEventListener("blur", function () {
-    annotations[currentFile].push({
-      type: "desc",
-      description: this.value,
-    });
-    renderAll();
-    navigationActive = true;
-  });
-
-document
   .getElementById("readabilityDropdown")
   .addEventListener("change", function () {
     const selectedValue = this.value;
@@ -281,18 +260,27 @@ document
     renderAll(); // update the canvas with new annotation
   });
 
-function downloadAnnotations() {
-  // Convert the annotations object to a JSON string
-  let dataStr =
-    "data:text/json;charset=utf-8," +
-    encodeURIComponent(JSON.stringify(annotations));
-  let downloadAnchorNode = document.createElement("a");
-  downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute("download", "annotations.json");
-  document.body.appendChild(downloadAnchorNode); // Required for Firefox
-  downloadAnchorNode.click();
-  downloadAnchorNode.remove();
-}
+  function downloadAnnotations() {
+    // Remove the color property from all annotations
+    annotations[currentFile].forEach((ann) => {
+      if ('color' in ann) {
+        delete ann.color; 
+      }
+    });
+
+
+    // Convert the annotations object to a JSON string
+    let dataStr =
+      "data:text/json;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(annotations));
+    let downloadAnchorNode = document.createElement("a");
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "annotations.json");
+    document.body.appendChild(downloadAnchorNode); // Required for Firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  }
+  
 
 // Function to update mask transparency
 function updateMaskOpacity(value) {
@@ -317,7 +305,9 @@ alphaSlider.addEventListener("input", function () {
 
 // mouse move
 crosshairCanvas.addEventListener("mousemove", function (event) {
+  // Draw the crosshair when not on the borders
   drawCrosshair(event.offsetX, event.offsetY);
+
   clicking = false; // mouse moved, not a click
   if (drawingBbox) {
     tmpCtx.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height);
@@ -420,7 +410,6 @@ crosshairCanvas.addEventListener("wheel", function (event) {
 
   // translation comes from the equality (tx - eo) / s1 = (tx2 - eo) / s2 which means that the relative position of eo wrt tx should be constant
   translateX = (translateX - event.offsetX) * zoomFactor + event.offsetX;
-  document.getElementById("annotationDescription").blur();
   renderAll();
 });
 ////////////////////
@@ -466,17 +455,16 @@ function addPoint(x, y, type) {
   annotations[currentFile].push({
     imgX: x,
     imgY: y,
+    description: "", 
     type: type,
   });
   renderAll(); // Update the canvas with new point
 }
 
 function checkColorExists(colorIndex) {
-    const neo = Math.floor(annotations[currentFile].length/30);
-    console.log(neo);
-    console.log('QQWQ');
+    const neo = Math.floor(annotations[currentFile].length/distinctCssColors.length);
     if (annotations[currentFile].length > 0) {
-      for (let i = neo*30; i < annotations[currentFile].length; i++) {
+      for (let i = neo*distinctCssColors.length; i < annotations[currentFile].length; i++) {
         if (annotations[currentFile][i].type === "bbox") {
           if (
             annotations[currentFile][i].color === distinctCssColors[colorIndex]
@@ -503,6 +491,7 @@ function addBoundingBox(start, end) {
     x2: Math.max(start.x, end.x),
     y2: Math.max(start.y, end.y),
     color: chosenColor,
+    description: "", 
     type: "bbox",
   };
   annotations[currentFile].push(bbox);
@@ -512,7 +501,8 @@ function addBoundingBox(start, end) {
 function renderAll() {
   tmpCtx.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height);
   annCtx.clearRect(0, 0, annCanvas.width, annCanvas.height);
-  drawImage(); // Redraw the image first
+  drawImage(); 
+
   if (maskImage) {
     maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
     maskCtx.globalAlpha = alphaSlider.value / 100;
@@ -525,8 +515,54 @@ function renderAll() {
     );
   }
 
-  let deleteDescription = true;
-  annotations[currentFile].forEach((ann) => {
+  // Clear the annotation input container
+  const annotationInputContainer = document.getElementById("annotationInputContainer");
+  annotationInputContainer.innerHTML = ""; // Clear any previous inputs
+
+  console.log(annotations[currentFile]);
+
+  // Loop through each annotation
+  annotations[currentFile].forEach((ann, index) => {
+    // Create the div with class 'inputdiv'
+    let inputDiv = document.createElement("div");
+    inputDiv.classList.add("inputdiv");
+  
+    // Create the span with the letter 'O'
+    let span = document.createElement("span");
+    span.classList.add("inputspan");
+
+    // Create the input field dynamically for descriptions
+    let input = document.createElement("input");
+    input.type = "text";
+    input.value = ann.description || "";
+    input.placeholder = `Description for annotation ${index + 1}`;
+
+    if (ann.type === "bbox") {
+      input.style.border = `2px solid ${ann.color}`; 
+      span.textContent = "□";
+      span.style.color = ann.color; 
+    } else if (ann.type === "positive") {
+      input.style.border = `2px solid green`;
+      span.textContent = "•";
+      span.style.color = "green"; 
+    } else if (ann.type === "negative") {
+      input.style.border = `2px solid red`;
+      span.textContent = "•";
+      span.style.color = "red"; 
+    }
+  
+    // Add an event listener to update the annotation description on input change
+    input.addEventListener("input", function () {
+      annotations[currentFile][index].description = this.value;
+    });
+  
+    // Append the span and input to the div
+    inputDiv.appendChild(span);
+    inputDiv.appendChild(input);
+  
+    // Append the div to the annotation input container
+    annotationInputContainer.appendChild(inputDiv);
+
     if (ann.type === "bbox") {
       annCtx.strokeStyle = ann.color;
       annCtx.lineWidth = 4;
@@ -535,10 +571,9 @@ function renderAll() {
       let x2 = ann.x2 * scale + translateX;
       let y2 = ann.y2 * scale + translateY;
       annCtx.strokeRect(x1, y1, x2 - x1, y2 - y1);
-    } else if (ann.type === "desc") {
-      deleteDescription = false;
-      document.getElementById("annotationDescription").value = ann.description;
-    } else if (ann.type == "readability") {
+    }
+
+    if (ann.type == "readability") {
       document.getElementById("readabilityDropdown").value = ann.value;
     } else if (ann.type == "imageQuality") {
       document.getElementById("imageQualityDropdown").value = ann.value;
@@ -553,10 +588,8 @@ function renderAll() {
       annCtx.fillRect(x - rs, y - rs, 2 * rs + 1, 2 * rs + 1);
     }
   });
-  if (deleteDescription) {
-    document.getElementById("annotationDescription").value = "";
-  }
 }
+
 ////////////////////
 ////////////////////
 ////////////////////
@@ -584,7 +617,19 @@ function drawImage() {
 }
 
 function drawCrosshair(x, y) {
+  // Clear the previous crosshair
   crosshairCtx.clearRect(0, 0, crosshairCanvas.width, crosshairCanvas.height);
+
+  // Tolerance to handle near-border cases (allow 1px tolerance)
+  const tolerance = 5;
+
+  // Check if the mouse is near the borders, if so, stop drawing
+  if (x <= tolerance || x >= crosshairCanvas.width - tolerance ||
+      y <= tolerance || y >= crosshairCanvas.height - tolerance) {
+    return; // Do nothing if near the borders
+  }
+
+  // If not near the borders, draw the crosshair
   crosshairCtx.strokeStyle = "red";
   crosshairCtx.beginPath();
   crosshairCtx.moveTo(x, 0);
@@ -593,6 +638,7 @@ function drawCrosshair(x, y) {
   crosshairCtx.lineTo(crosshairCanvas.width, y);
   crosshairCtx.stroke();
 }
+
 
 function resetViewParams() {
   let maxCanvasWidth = imageCanvas.width - 2 * margin;
