@@ -10,15 +10,13 @@
   <body>
     <!-- Buttons and Controls -->
     <div class="button-container">
-      <button id="selectFolderButton" style="font-size: x-large">
-        Select Folder
-      </button>
+      <button id="selectFolderButton" style="font-size: x-large">Select Folder</button>
       <button id="prevButton" class="btn hidden">Previous</button>
       <button id="nextButton" class="btn hidden">Next</button>
       <button id="resetViewButton" class="btn hidden">Reset View</button>
       <button id="clearButton" class="btn hidden">Clear</button>
       <button id="undoButton" class="btn hidden">Undo</button>
-
+      <!-- Switch Box/Point Mode -->
       <div class="switch-container" id="switch-container">
         <label class="switch">
           <input type="checkbox" id="toggleModeButton" />
@@ -26,27 +24,20 @@
         </label>
         <span id="switchLabel">Point Mode</span>
       </div>
-      
-
-
-      <button id="loadAnnotationsButton" class="btn hidden">
-        Load Annotations
-      </button>
+      <button id="loadAnnotationsButton" class="btn hidden">Load Annotations</button>
       <button id="helpButton" class="btn hidden">?</button>
     </div>
-
     <!-- Privacy Note -->
     <p id="privacy" class="privacy-note" style="text-align: center">
       <strong>Privacy note:</strong> The app runs in your browser and no data is
       ever sent. <br />
       You can always disable your internet connection or check the
       <a
-        href="https://github.com/franchesoni/minimalist-annotation/blob/main/index.html"
+        href="https://dev.azure.com/slb-swt/AI_Lab/_git/technobrick_borehole_annotation_tool?path=/single_file_app/annotation.html"
         >source code</a
       >
       if in doubt.
     </p>
-
     <!-- Canvas Containers & Annotation Description -->
     <div id="ccad">
       <!-- Canvas Containers -->
@@ -57,7 +48,6 @@
         <canvas id="tmpCanvas"></canvas>
         <canvas id="crosshairCanvas"></canvas>
       </div>
-
       <!-- Annotation Description Input -->
       <div class="input-container hidden" id="annotationInputContainer">
         <input
@@ -67,9 +57,6 @@
         />
       </div>
     </div>
-
-
-
     <!-- Dropdowns -->
     <div class="button-container">
       <!-- Image Quality Dropdown -->
@@ -82,7 +69,6 @@
           <option value="good">Good</option>
         </select>
       </div>
-
       <!-- Readability Dropdown -->
       <div id="readabilityDropdownContainer" class="dropdown-container hidden">
         <label for="readabilityDropdown">Text readability:</label>
@@ -93,18 +79,14 @@
           <option value="un-readable">Un-readable</option>
         </select>
       </div>
-
       <!-- Export Button -->
       <button id="downloadButton" class="btn hidden">Save Annotations</button>
     </div>
-
-
-    <!-- Mask Opacity Slider : The Logic is still present in the back but since it's not used ...-->
+    <!-- Mask Opacity Slider : Dead code but keep here for potential uses in the future -->
     <div class="slider-container hidden" id="sliderContainer">
       <label for="alphaSlider">Mask Opacity:</label>
       <input type="range" id="alphaSlider" min="0" max="100" value="30" />
     </div>
-
     <!-- Help Modal -->
     <div id="helpModal" class="modal hidden">
       <div class="modal-content">
@@ -117,24 +99,22 @@
             <li><strong>Zoom:</strong> Scroll mouse wheel.</li>
             <li><strong>Reset View:</strong> Click the "Reset View" button.</li>
             <li>
-              <strong>Next Image:</strong> Click `Next` or press `D` or
-              `RightArrow`.
+              <strong>Next Image:</strong> Click `Next` or `RightArrow`.
             </li>
             <li>
-              <strong>Previous Image:</strong> Click `Previous` or press `A` or
-              `LeftArrow`.
+              <strong>Previous Image:</strong> Click `Previous` or `LeftArrow`.
             </li>
-            <li>
+            <!-- <li>
               <strong>Overlay Mask:</strong> Save your image as `imgname.jpg`
               with the mask as `imgname_mask.png`.
-            </li>
+            </li> -->
           </ul>
         </section>
         <section>
           <h3>Annotation</h3>
           <ul>
             <li>
-              <strong>Switch Mode:</strong> Toggle between point annotation and
+              <strong>Switch Mode:</strong> Switch between point annotation and
               bounding box annotation modes.
             </li>
             <li>
@@ -146,17 +126,13 @@
               (negative) clicks.
             </li>
             <li>
-              <strong>Text Annotation:</strong> Insert or edit the text in the
-              textbox.
+              <strong>Text Annotation:</strong> Each annotation will have it's own text box to describe the annotation, the color of the text box will be the same as the annotation.
             </li>
             <li>
-              <strong>Delete Annotation:</strong> Click `Undo` to remove the
-              last annotation or `Clear` to remove all annotations on the
-              current image.
+              <strong>Delete Annotation:</strong> Click `Undo` or `CTRL+Z` to remove the last annotation or `Clear` to remove all annotations on the current image.
             </li>
             <li>
-              <strong>Save/Load:</strong> Save your annotations to a file or
-              load previous annotations using `Save` and `Load`.
+              <strong>Save/Load:</strong> Save your annotations to a file or load previous annotations using `Save` and `Load`.
             </li>
           </ul>
         </section>
@@ -175,7 +151,6 @@
         </section>
       </div>
     </div>
-
     <!-- Hidden Inputs -->
     <input
       type="file"
@@ -186,7 +161,6 @@
       multiple
     />
     <input type="file" id="loadFileInput" class="hidden" accept=".json" />
-
     <script src="logic.js"></script>
   </body>
 </html>

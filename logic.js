@@ -404,42 +404,17 @@ crosshairCanvas.addEventListener("wheel", function (event) {
   translateX = (translateX - event.offsetX) * zoomFactor + event.offsetX;
   renderAll();
 });
-////////////////////
-////////////////////
-////////////////////
 
 const distinctCssColors = [
-  "purple",
-  "blueviolet",
-  "aqua",
-  "brown",
-  "coral",
-  "cornflowerblue",
-  "cyan",
-  "darkorange",
-  "deeppink",
-  "firebrick",
-  "deeppink",
-  "gold",
-  "greenyellow",
-  "indigo",
-  "khaki",
-  "lightcoral",
-  "lightsalmon",
-  "lightseagreen",
-  "magenta",
-  "lavender",
-  "plum",
-  "orangered",
-  "royalblue",
-  "thistle",
-  "yellow",
-  "palevioletred",
-  "sienna",
-  "slateblue",
-  "teal",
-  "whitesmoke"
+  "#b4f0e9", "#b917cf", "#f0b4d1", "#17aacf", "#e4f0b4", 
+  "#cf1757", "#b4d7f0", "#f0b4be", "#599e8d", "#a7cf17",
+  "#9a17cf", "#17cfa1", "#b4c1f0", "#f0c9b4", "#82cf17",
+  "#cf172c", "#b4f0d4", "#cfb4f0", "#17cfc8", "#e5b4f0",
+  "#78ad6d", "#172ccf", "#1776cf", "#f0d9b4", "#c6f0b4", 
+  "#bbb4f0", "#cf5a17", "#6917cf", "#cf9117", "#bfcf17",
 ];
+
+
 
 function addPoint(x, y, type) {
   console.log("Adding point at", x, y, type);
@@ -453,36 +428,12 @@ function addPoint(x, y, type) {
   renderAll(); // Update the canvas with new point
 }
 
-function checkColorExists(colorIndex) {
-    const neo = Math.floor(annotations[currentFile].length/distinctCssColors.length);
-    if (annotations[currentFile].length > 0) {
-      for (let i = neo*distinctCssColors.length; i < annotations[currentFile].length; i++) {
-        if (annotations[currentFile][i].type === "bbox") {
-          if (
-            annotations[currentFile][i].color === distinctCssColors[colorIndex]
-          ) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-}
-
 function addBoundingBox(start, end) {
-  let random = Math.floor(Math.random() * distinctCssColors.length);
-  do {
-    random = Math.floor(Math.random() * distinctCssColors.length);
-  } while (checkColorExists(random));
-
-  chosenColor = distinctCssColors[random];
-
   let bbox = {
     x1: Math.min(start.x, end.x),
     y1: Math.min(start.y, end.y),
     x2: Math.max(start.x, end.x),
     y2: Math.max(start.y, end.y),
-    color: chosenColor,
     description: "", 
     type: "bbox",
   };
@@ -490,7 +441,7 @@ function addBoundingBox(start, end) {
   renderAll();
 }
 
-function renderAll() {
+function renderAll(focusedIndex) {
   tmpCtx.clearRect(0, 0, tmpCanvas.width, tmpCanvas.height);
   annCtx.clearRect(0, 0, annCanvas.width, annCanvas.height);
   drawImage(); 
@@ -507,60 +458,82 @@ function renderAll() {
     );
   }
 
-  // Clear the annotation input container
-  const annotationInputContainer = document.getElementById("annotationInputContainer");
-  annotationInputContainer.innerHTML = ""; // Clear any previous inputs
-
-  console.log(annotations[currentFile]);
+  if (!focusedIndex) {
+    // Clear the annotation input container
+    const annotationInputContainer = document.getElementById("annotationInputContainer");
+    annotationInputContainer.innerHTML = ""; // Clear any previous inputs
+  }
 
   // Loop through each annotation
   annotations[currentFile].forEach((ann, index) => {
-    if (ann.type == "bbox" || ann.type == "positive" || ann.type == "negative") {
-    // Create the div with class 'inputdiv'
-    let inputDiv = document.createElement("div");
-    inputDiv.classList.add("inputdiv");
-  
-    // Create the span with the letter 'O'
-    let span = document.createElement("span");
-    span.classList.add("inputspan");
+    if (!focusedIndex && (ann.type == "bbox" || ann.type == "positive" || ann.type == "negative")) {
+      // Create the div with class 'inputdiv'
+      let inputDiv = document.createElement("div");
+      inputDiv.classList.add("inputdiv");
+    
+      // Create the span with the letter 'O'
+      let span = document.createElement("span");
+      span.classList.add("inputspan");
 
-    // Create the input field dynamically for descriptions
-    let input = document.createElement("input");
-    input.type = "text";
-    input.value = ann.description || "";
-    input.placeholder = `Description for annotation ${index - 1}`;
+      // Create the input field dynamically for descriptions
+      let input = document.createElement("input");
+      input.type = "text";
+      input.value = ann.description || "";
+      input.placeholder = `Description for annotation ${index - 1}`;
+
+      let button = document.createElement("button");
+      button.textContent = `🗑`;
+      button.classList.add("inputbutton");
+
+
+      if (ann.type === "bbox") {
+        if (!ann.color) {
+            ann.color = distinctCssColors[index % distinctCssColors.length];
+         }
+        input.style.border = `2px solid ${ann.color}`; 
+        span.textContent = "□";
+        span.style.color = ann.color; 
+      } else if (ann.type === "positive") {
+        input.style.border = `2px solid green`;
+        span.textContent = "•";
+        span.style.color = "green"; 
+      } else if (ann.type === "negative") {
+        input.style.border = `2px solid red`;
+        span.textContent = "•";
+        span.style.color = "red"; 
+      }
+
+      button.addEventListener("click", function () {
+        annotations[currentFile].splice(index,1)
+        renderAll();
+      });
+
+      // Add an event listener to update the annotation description on input change
+      input.addEventListener("input", function () {
+        annotations[currentFile][index].description = this.value;
+      });
+
+      input.addEventListener("focus", function () {
+        renderAll(index);
+      });
+      input.addEventListener("focusout", function () {
+        renderAll();
+      });
+    
+      // Append the span and input to the div
+      inputDiv.appendChild(button);
+      inputDiv.appendChild(input);
+      inputDiv.appendChild(span);
+
+    
+      // Append the div to the annotation input container
+      annotationInputContainer.appendChild(inputDiv);
+
+    }
 
     if (ann.type === "bbox") {
-      input.style.border = `2px solid ${ann.color}`; 
-      span.textContent = "□";
-      span.style.color = ann.color; 
-    } else if (ann.type === "positive") {
-      input.style.border = `2px solid green`;
-      span.textContent = "•";
-      span.style.color = "green"; 
-    } else if (ann.type === "negative") {
-      input.style.border = `2px solid red`;
-      span.textContent = "•";
-      span.style.color = "red"; 
-    }
-  
-    // Add an event listener to update the annotation description on input change
-    input.addEventListener("input", function () {
-      annotations[currentFile][index].description = this.value;
-    });
-  
-    // Append the span and input to the div
-    inputDiv.appendChild(span);
-    inputDiv.appendChild(input);
-  
-    // Append the div to the annotation input container
-    annotationInputContainer.appendChild(inputDiv);
-
-    }
-
-    if (ann.type === "bbox") {
-      annCtx.strokeStyle = ann.color;
-      annCtx.lineWidth = 4;
+      annCtx.strokeStyle = focusedIndex === index ? "fuchsia" : ann.color;
+      annCtx.lineWidth = focusedIndex === index ? 6 : 4;
       let x1 = ann.x1 * scale + translateX;
       let y1 = ann.y1 * scale + translateY;
       let x2 = ann.x2 * scale + translateX;
@@ -574,20 +547,18 @@ function renderAll() {
       document.getElementById("imageQualityDropdown").value = ann.value;
     } else {
       if (ann.type === "positive") {
-        annCtx.fillStyle = "green";
+        annCtx.fillStyle = focusedIndex === index ? "fuchsia" : "green";
       } else if (ann.type === "negative") {
-        annCtx.fillStyle = "red";
+        annCtx.fillStyle = focusedIndex === index ? "fuchsia" : "red";
       }
       let x = ann.imgX * scale + translateX;
       let y = ann.imgY * scale + translateY;
       annCtx.fillRect(x - rs, y - rs, 2 * rs + 1, 2 * rs + 1);
     }
   });
+
 }
 
-////////////////////
-////////////////////
-////////////////////
 function applyClamping() {
   translateX = Math.max(
     Math.min(imageCanvas.width - margin, translateX),
