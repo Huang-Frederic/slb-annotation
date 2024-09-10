@@ -29,31 +29,48 @@ let drawingBbox = false;
 let navigationActive = true;
 let currentFile = null;
 
-document
-  .getElementById("selectFolderButton")
-  .addEventListener("click", function () {
-    document.getElementById("folderInput").click();
-  });
+const distinctCssColors = [ // 30 distinct colors for the annotations
+  "#b4f0e9", "#b917cf", "#f0b4d1", "#17aacf", "#e4f0b4", 
+  "#cf1757", "#b4d7f0", "#f0b4be", "#599e8d", "#a7cf17",
+  "#9a17cf", "#17cfa1", "#b4c1f0", "#f0c9b4", "#82cf17",
+  "#cf172c", "#b4f0d4", "#cfb4f0", "#17cfc8", "#e5b4f0",
+  "#78ad6d", "#172ccf", "#1776cf", "#f0d9b4", "#c6f0b4", 
+  "#bbb4f0", "#cf5a17", "#6917cf", "#cf9117", "#bfcf17",
+];
 
+// Folder Button Trigger
+document.getElementById("selectFolderButton").addEventListener("click", function () {
+  document.getElementById("folderInput").click();
+});
+// Navigation with arrow keys
 document.addEventListener("keydown", function (event) {
   if (
     navigationActive &&
     (event.key === "ArrowLeft")
   ) {
-    // Simulate a click on the "Previous" button
     document.getElementById("prevButton").click();
   } else if (
     navigationActive &&
     (event.key === "ArrowRight")
   ) {
-    // Simulate a click on the "Next" button
     document.getElementById("nextButton").click();
   }
 });
+document.getElementById("nextButton").addEventListener("click", function () {
+  if (currentIndex < imageFiles.length - 1) {
+    currentIndex++;
+    loadSample();
+  }
+});
+document.getElementById("prevButton").addEventListener("click", function () {
+  if (currentIndex > 0) {
+    currentIndex--;
+    loadSample();
+  }
+});
 
-document
-  .getElementById("folderInput")
-  .addEventListener("change", function (event) {
+// Process uploaded folder
+document.getElementById("folderInput").addEventListener("change", function (event) {
     const files = event.target.files;
     imageFiles = [];
     annotations = {};
@@ -68,14 +85,12 @@ document
       document.getElementById("selectFolderButton").style.display = "none";
       document.getElementById("privacy").style.display = "none";
 
-      // Remove 'hidden' class from all elements with the class 'btn' or 'dropdown-container'
+      // Remove 'hidden' class from all elements 
       document
         .querySelectorAll(".btn, .dropdown-container")
         .forEach((element) => {
           element.classList.remove("hidden");
         });
-
-      // Remove 'hiden' for the other containers
       document.getElementById("canvasContainer").classList.remove("hidden");
       document
         .getElementById("annotationInputContainer")
@@ -89,41 +104,30 @@ document
     }
   });
 
-// Get the modal
+// Modal
 var modal = document.getElementById("helpModal");
-
-// Get the button that opens the modal
 var btn = document.getElementById("helpButton");
-
-// Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
 
-// When the user clicks the button, open the modal
-btn.onclick = function () {
+btn.onclick = function () { // open the modal when clicking on the ?
   modal.style.display = "block";
 };
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function () {
+span.onclick = function () { // close the modal when clicking on the x
   modal.style.display = "none";
 };
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function (event) {
-  if (event.target == modal) {
+window.onclick = function (event) { // close the modal when clicking outside of it
+  if (event.target == modal) { 
     modal.style.display = "none";
   }
 };
 
-document
-  .getElementById("loadAnnotationsButton")
-  .addEventListener("click", function () {
-    document.getElementById("loadFileInput").click(); // Trigger file selection
+// Import Annotations Button
+document.getElementById("loadAnnotationsButton").addEventListener("click", function () {
+    document.getElementById("loadFileInput").click(); 
   });
 
-document
-  .getElementById("loadFileInput")
-  .addEventListener("change", function (event) {
+// Process the Imported Annotations
+document.getElementById("loadFileInput").addEventListener("change", function (event) {
     const file = event.target.files[0];
     if (file && file.type === "application/json") {
       const reader = new FileReader();
@@ -132,7 +136,7 @@ document
           const loadedAnnotations = JSON.parse(e.target.result);
           if (typeof loadedAnnotations === "object") {
             annotations = loadedAnnotations;
-            renderAll(); // Update the canvas with loaded annotations
+            renderAll();
             alert("Annotations loaded successfully.");
           } else {
             throw new Error("Format is not correct");
@@ -148,6 +152,7 @@ document
     this.value = ""; // Reset the input after the file is loaded
   });
 
+// Toggle Annotation Mode
 document.getElementById("toggleModeButton").addEventListener("change", function () {
   console.log("Switching annotation mode");
   const label = document.getElementById("switchLabel"); 
@@ -159,26 +164,9 @@ document.getElementById("toggleModeButton").addEventListener("change", function 
     label.textContent = "Point Mode";
   }
 });
-  
 
-
-document.getElementById("nextButton").addEventListener("click", function () {
-  if (currentIndex < imageFiles.length - 1) {
-    currentIndex++;
-    loadSample();
-  }
-});
-
-document.getElementById("prevButton").addEventListener("click", function () {
-  if (currentIndex > 0) {
-    currentIndex--;
-    loadSample();
-  }
-});
-
-document
-  .getElementById("resetViewButton")
-  .addEventListener("click", function () {
+// Tools
+document.getElementById("resetViewButton").addEventListener("click", function () {
     resetViewParams();
     renderAll();
   });
@@ -186,10 +174,6 @@ document
 document.getElementById("clearButton").addEventListener("click", function () {
   annotations[currentFile] = [];
   renderAll();
-});
-
-document.getElementById("undoButton").addEventListener("click", function () {
-  undoLastAnnotation();
 });
 
 document.addEventListener("keydown", function (event) {
@@ -202,7 +186,9 @@ document.addEventListener("keydown", function (event) {
     console.log(annotations[currentFile]);
   }
 });
-
+document.getElementById("undoButton").addEventListener("click", function () {
+  undoLastAnnotation();
+});
 function undoLastAnnotation() {
   if (annotations[currentFile] && annotations[currentFile].length > 0) {
     annotations[currentFile].pop();
@@ -212,15 +198,12 @@ function undoLastAnnotation() {
   }
 }
 
-document
-  .getElementById("downloadButton")
-  .addEventListener("click", function () {
+document.getElementById("downloadButton").addEventListener("click", function () {
     downloadAnnotations();
   });
 
-document
-  .getElementById("readabilityDropdown")
-  .addEventListener("change", function () {
+// Dropdowns
+document.getElementById("readabilityDropdown").addEventListener("change", function () {
     const selectedValue = this.value;
     annotations[currentFile].forEach((ann_) => {
       if (ann_.type == "readability") {
@@ -230,10 +213,7 @@ document
     });
     renderAll(); // update the canvas with new annotation
   });
-
-document
-  .getElementById("imageQualityDropdown")
-  .addEventListener("change", function () {
+document.getElementById("imageQualityDropdown").addEventListener("change", function () {
     const selectedValue = this.value;
     annotations[currentFile].forEach((ann_) => {
       if (ann_.type == "imageQuality") {
@@ -243,42 +223,38 @@ document
     renderAll(); // update the canvas with new annotation
   });
 
-  function downloadAnnotations() {
-    let description = "";
+// Download Annotations
+function downloadAnnotations() {
+  let description = "";
+  // Remove the color property from all annotations
+  annotations[currentFile].forEach((ann) => {
+    if ('color' in ann) {
+      delete ann.color; 
+    }
+    // copy all the description if there 
+    if (ann.type == "bbox" || ann.type == "positive" || ann.type == "negative") {
+      description += ann.description;
+      description += "\n";
+    }
+  });
+  annotations[currentFile].push({"type":"desc","description":description});
 
-    // Remove the color property from all annotations
-    annotations[currentFile].forEach((ann) => {
-      if ('color' in ann) {
-        delete ann.color; 
-      }
-      // copy all the description if there 
-      if (ann.type == "bbox" || ann.type == "positive" || ann.type == "negative") {
-        description += ann.description;
-        description += "\n";
-      }
-    });
+  // Convert the annotations object to a JSON string
+  let dataStr =
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(JSON.stringify(annotations));
+  let downloadAnchorNode = document.createElement("a");
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", "annotations.json");
+  document.body.appendChild(downloadAnchorNode); // Required for Firefox
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}
 
-    annotations[currentFile].push({"type":"desc","description":description});
-
-
-    // Convert the annotations object to a JSON string
-    let dataStr =
-      "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(annotations));
-    let downloadAnchorNode = document.createElement("a");
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "annotations.json");
-    document.body.appendChild(downloadAnchorNode); // Required for Firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-  }
-  
-
-// Function to update mask transparency
+// Function to update mask transparency : Dead code but keep here for potential uses in the future 
 function updateMaskOpacity(value) {
   renderAll();
 }
-
 // Debounce function to limit excessive updates
 function debounce(fn, delay) {
   let timeout;
@@ -327,7 +303,6 @@ window.addEventListener("contextmenu", function (event) {
   event.preventDefault();
 });
 
-// click
 crosshairCanvas.addEventListener("mousedown", function (event) {
   clicking = true;
   if (event.button === 0) {
@@ -405,27 +380,16 @@ crosshairCanvas.addEventListener("wheel", function (event) {
   renderAll();
 });
 
-const distinctCssColors = [
-  "#b4f0e9", "#b917cf", "#f0b4d1", "#17aacf", "#e4f0b4", 
-  "#cf1757", "#b4d7f0", "#f0b4be", "#599e8d", "#a7cf17",
-  "#9a17cf", "#17cfa1", "#b4c1f0", "#f0c9b4", "#82cf17",
-  "#cf172c", "#b4f0d4", "#cfb4f0", "#17cfc8", "#e5b4f0",
-  "#78ad6d", "#172ccf", "#1776cf", "#f0d9b4", "#c6f0b4", 
-  "#bbb4f0", "#cf5a17", "#6917cf", "#cf9117", "#bfcf17",
-];
-
-
-
+// Draw canva
 function addPoint(x, y, type) {
   console.log("Adding point at", x, y, type);
-  // Save the annotation
   annotations[currentFile].push({
     imgX: x,
     imgY: y,
     description: "", 
     type: type,
   });
-  renderAll(); // Update the canvas with new point
+  renderAll();
 }
 
 function addBoundingBox(start, end) {
@@ -481,10 +445,10 @@ function renderAll(focusedIndex) {
       input.value = ann.description || "";
       input.placeholder = `Description for annotation ${index - 1}`;
 
+      // Create the delete button
       let button = document.createElement("button");
       button.textContent = `🗑`;
       button.classList.add("inputbutton");
-
 
       if (ann.type === "bbox") {
         if (!ann.color) {
@@ -502,20 +466,20 @@ function renderAll(focusedIndex) {
         span.textContent = "•";
         span.style.color = "red"; 
       }
-
+      // Add an event listener to delete the annotation on button click
       button.addEventListener("click", function () {
         annotations[currentFile].splice(index,1)
         renderAll();
       });
-
       // Add an event listener to update the annotation description on input change
       input.addEventListener("input", function () {
         annotations[currentFile][index].description = this.value;
       });
-
+      // Add an event listener to render all annotations when the input is focused
       input.addEventListener("focus", function () {
         renderAll(index);
       });
+      // Add an event listener to render all annotations when the input is focused
       input.addEventListener("focusout", function () {
         renderAll();
       });
@@ -528,7 +492,6 @@ function renderAll(focusedIndex) {
     
       // Append the div to the annotation input container
       annotationInputContainer.appendChild(inputDiv);
-
     }
 
     if (ann.type === "bbox") {
@@ -605,7 +568,6 @@ function drawCrosshair(x, y) {
   crosshairCtx.stroke();
 }
 
-
 function resetViewParams() {
   let maxCanvasWidth = imageCanvas.width - 2 * margin;
   let maxCanvasHeight = imageCanvas.height - 2 * margin;
@@ -640,7 +602,6 @@ function loadSample() {
           maskCanvas.height =
             canvasContainer.clientHeight;
 
-        // Reset zoom and translation
         resetViewParams();
         renderAll();
       };
@@ -648,7 +609,7 @@ function loadSample() {
     };
     fileReader.readAsDataURL(imageFiles[currentIndex]);
 
-    let baseName = currentFile.replace(/\.[^/.]+$/, ""); // Remove extension
+    let baseName = currentFile.replace(/\.[^/.]+$/, "");
     let maskName = baseName + "_mask.png";
     let maskFile = Array.from(imageFiles).find(
       (file) => file.name === maskName
