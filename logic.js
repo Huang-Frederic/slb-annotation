@@ -244,12 +244,21 @@ document
   });
 
   function downloadAnnotations() {
+    let description = "";
+
     // Remove the color property from all annotations
     annotations[currentFile].forEach((ann) => {
       if ('color' in ann) {
         delete ann.color; 
       }
+      // copy all the description if there 
+      if (ann.type == "bbox" || ann.type == "positive" || ann.type == "negative") {
+        description += ann.description;
+        description += "\n";
+      }
     });
+
+    annotations[currentFile].push({"type":"desc","description":description});
 
 
     // Convert the annotations object to a JSON string
